@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Bukti Pengiriman HP - JNE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      -webkit-text-size-adjust: 100%;
+    }
+    .header {
+      background-color: white;
+      padding: 15px 10px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header img {
+      max-width: 150px;
+      height: auto;
+    }
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 10px auto;
+      background: #fff;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    .form-header {
+      background-color: #003e7e;
+      color: white;
+      padding: 12px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .form-content {
+      padding: 15px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    textarea {
+      min-height: 80px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 14px;
+      width: 100%;
+      background: #d71920;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #b5151b;
+    }
+    #hasil {
+      margin-top: 20px;
+      background: #fff;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      display: none;
+      overflow: hidden;
+    }
+    .receipt-header {
+      background-color: #003e7e;
+      color: white;
+      padding: 12px;
+      text-align: center;
+    }
+    .receipt-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .receipt-content {
+      padding: 15px;
+    }
+    .receipt-content p {
+      margin: 10px 0;
+      font-size: 14px;
+      line-height: 1.4;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+      word-break: break-word;
+    }
+    .receipt-content p:last-child {
+      border-bottom: none;
+    }
+    .receipt-content strong {
+      color: #003e7e;
+      display: inline-block;
+      width: 100px;
+      vertical-align: top;
+    }
+    .download-btn {
+      background: #003e7e;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      margin-top: 0;
+      width: 100%;
+      border-radius: 0;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .download-btn:hover {
+      background: #002b5a;
+    }
+
+    /* Media query for slightly larger screens */
+    @media (min-width: 400px) {
+      .container {
+        max-width: 380px;
+        margin: 15px auto;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      }
+      #hasil {
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="https://i.ibb.co/dN4mNPz/download-removebg-preview.png" alt="Logo JNE">
+  </div>
+
+  <div class="container">
+    <div class="form-header">
+      FORMAT DATA
+    </div>
+    <div class="form-content">
+      <form id="kirimForm">
+        <label>Nama Penerima</label>
+        <input type="text" name="nama" required>
+
+        <label>Nomor HP</label>
+        <input type="tel" name="hp" required inputmode="tel">
+
+        <label>Alamat Tujuan</label>
+        <textarea name="alamat" rows="3" required></textarea>
+
+        <label>Jenis HP</label>
+        <input type="text" name="jenis" required>
+
+        <button type="submit">Kirim Sekarang</button>
+      </form>
+    </div>
+
+    <div id="hasil">
+      <div class="receipt-header">
+        <h3>BUKTI PENGIRIMAN JNE</h3>
+      </div>
+      <div class="receipt-content" id="bukti"></div>
+      <button class="download-btn" onclick="downloadBukti()">Download Bukti Pengiriman</button>
+    </div>
+  </div>
+
+  <!-- html2canvas CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const form = document.getElementById('kirimForm');
+    const hasil = document.getElementById('hasil');
+    const bukti = document.getElementById('bukti');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = new FormData(form);
+      const tanggal = new Date().toLocaleString('id-ID');
+      const resi = 'JNE' + Math.floor(100000000 + Math.random() * 900000000);
+
+      bukti.innerHTML = `
+        <p><strong>No. Resi:</strong> <span style="color: #d71920; font-weight: bold;">${resi}</span></p>
+        <p><strong>Nama Penerima:</strong> ${data.get('nama')}</p>
+        <p><strong>Nomor HP:</strong> ${data.get('hp')}</p>
+        <p><strong>Alamat Tujuan:</strong> ${data.get('alamat').replace(/\n/g, '<br>')}</p>
+        <p><strong>Jenis HP:</strong> ${data.get('jenis')}</p>
+        <p><strong>Tanggal Kirim:</strong> ${tanggal}</p>
+        <p><strong>Status:</strong> <span style="color: #d71920; font-weight: bold;">Dalam Proses Pengiriman</span></p>
+      `;
+      hasil.style.display = 'block';
+      window.scrollTo({
+        top: document.getElementById('hasil').offsetTop,
+        behavior: 'smooth'
+      });
+    });
+
+    function downloadBukti() {
+      html2canvas(document.getElementById('hasil')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'bukti-pengiriman-jne.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
